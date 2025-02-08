@@ -1,0 +1,122 @@
+<html><head><base href="https:// "><title>Nyaa.my.id W.I.P.</title>
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+  }
+  
+  .checkerboard-container {
+    position: absolute;
+    width: 300%;
+    height: 300%;
+    top: -100%;
+    left: -100%;
+    overflow: hidden;
+  }
+
+  .checkerboard {
+    width: 100%;
+    height: 100%;
+    background-size: 200px 100px;
+    will-change: transform;
+  }
+
+  .tile {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    background-size: cover;
+  }
+</style>
+</head>
+<body>
+<div class="checkerboard-container" id="checkerboardContainer">
+  <div class="checkerboard" id="checkerboard"></div>
+</div>
+
+<script>
+  const checkerboard = document.getElementById('checkerboard');
+  const checkerboardContainer = document.getElementById('checkerboardContainer');
+  const tileSize = 100;
+  let rows, cols;
+  let isDarkMode = Math.random() < 0.5;
+
+  const tileImages = {
+    1: 'https://i.imgur.com/Jm2Ou9C.png',
+    2: 'https://i.imgur.com/9SQt7Ke.png',
+    3: 'https://i.imgur.com/0orHD3i.png',
+    4: 'https://i.imgur.com/Jm2Ou9C.png',
+    5: 'https://i.imgur.com/9SQt7Ke.png',
+    6: 'https://i.imgur.com/0orHD3i.png',
+  };
+
+  function updateTiles() {
+    const containerWidth = window.innerWidth * 3;
+    const containerHeight = window.innerHeight * 3;
+    rows = Math.ceil(containerHeight / tileSize);
+    cols = Math.ceil(containerWidth / tileSize);
+
+    checkerboard.innerHTML = '';
+    for (let i = 0; i < rows * cols; i++) {
+      const tile = document.createElement('div');
+      tile.className = 'tile';
+      const row = Math.floor(i / cols);
+      const col = i % cols;
+      tile.style.left = `${col * tileSize}px`;
+      tile.style.top = `${row * tileSize}px`;
+      
+      if (row % 2 === 0) {
+        if (col % 2 === 0) {
+          tile.dataset.tileType = isDarkMode ? '2' : '5';
+        } else {
+          tile.dataset.tileType = isDarkMode ? '1' : '4';
+        }
+      } else {
+        if (col % 2 === 0) {
+          tile.dataset.tileType = isDarkMode ? '1' : '4';
+        } else {
+          tile.dataset.tileType = isDarkMode ? '3' : '6';
+        }
+      }
+      
+      const tileType = tile.dataset.tileType;
+      if (tileImages[tileType]) {
+        tile.style.backgroundImage = `url(${tileImages[tileType]})`;
+      }
+      
+      checkerboard.appendChild(tile);
+    }
+  }
+
+  updateTiles();
+
+  window.addEventListener('resize', updateTiles);
+
+  // Seamless scrolling
+  let scrollX = 0;
+  let scrollY = 0;
+  let scrollSpeed = Math.random() * 2 + 0.1; // Random speed between 0.1 and 2.1
+  let rotation = Math.floor(Math.random() * 360); // Random rotation between 0 and 359
+  let scrollDirection = Math.floor(Math.random() * 360); // Random direction between 0 and 359
+
+  function seamlessScroll() {
+    const radians = scrollDirection * Math.PI / 180;
+    scrollX += scrollSpeed * Math.cos(radians);
+    scrollY += scrollSpeed * Math.sin(radians);
+
+    if (scrollX >= tileSize * 2) scrollX -= tileSize * 2;
+    if (scrollX < 0) scrollX += tileSize * 2;
+    if (scrollY >= tileSize * 2) scrollY -= tileSize * 2;
+    if (scrollY < 0) scrollY += tileSize * 2;
+
+    checkerboard.style.transform = `translate(${-scrollX}px, ${-scrollY}px)`;
+    checkerboardContainer.style.transform = `rotate(${rotation}deg)`;
+    requestAnimationFrame(seamlessScroll);
+  }
+
+  seamlessScroll();
+</script>
+</body></html>
